@@ -10,13 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
       questionTitle.textContent = 'Какого цвета бургер вы хотите?';
 
       const src = './image/burger.png';
-      const burger = 'Стандарт';
+      const burgerTitle = 'Стандарт';
       formAnswers.innerHTML = `
         <div class="answers-item d-flex flex-column">
           <input type="radio" id="answerItem1" name="answer" class="d-none">
           <label for="answerItem1" class="d-flex flex-column justify-content-between">
             <img class="answerImg" src="${src}" alt="burger">
-            <span>${burger}</span>
+            <span>${burgerTitle}</span>
           </label>
         </div>
       `;
