@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let numberQuestion = 0;
     const renderAnswers = (index) => {
-      questions[index].answers.forEach((answer) => {
+      questions[index].answers.forEach(answer => {
         const answerItem = document.createElement('div');
         answerItem.classList.add('answers-item', 'd-flex', 'justify-content-center');
         answerItem.innerHTML = `
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span>${answer.title}</span>
           </label>
         `;
-        formAnswers.appendChild(answerItem);
+        formAnswers.append(answerItem);
       });
     };
 
