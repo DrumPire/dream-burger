@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
         questionTitle = document.querySelector('#question'),
         formAnswers = document.querySelector('#formAnswers'),
         prevButton = document.querySelector('#prev'),
-        nextButton = document.querySelector('#next');
+        nextButton = document.querySelector('#next'),
+        sendButton = document.querySelector('#send');
 
   const questions = [
     {
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ];
 
   const playTest = () => {
-    const finalAnswers = {};
+    const finalAnswers = [];
 
     let numberQuestion = 0;
     const renderAnswers = (index) => {
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const answerItem = document.createElement('div');
         answerItem.classList.add('answers-item', 'd-flex', 'justify-content-center');
         answerItem.innerHTML = `
-          <input type="${questions[index].type}" id="${answer.title}" name="answer" class="d-none">
+          <input type="${questions[index].type}" id="${answer.title}" name="answer" class="d-none" value="${answer.title}">
           <label for="${answer.title}" class="d-flex flex-column justify-content-between">
             <img class="answerImg" src="${answer.url}" alt="burger">
             <span>${answer.title}</span>
@@ -104,26 +105,89 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderQuestions = (indexQuestion) => {
       formAnswers.innerHTML = '';
 
-      if (numberQuestion >= 0 && numberQuestion <= questions.length - 1) {
-        questionTitle.textContent = `${questions[indexQuestion].question}`;
-        renderAnswers(indexQuestion);
+      switch(true) {
+        case (numberQuestion >= 0 && numberQuestion <= questions.length - 1):
+          questionTitle.textContent = `${questions[indexQuestion].question}`;
+          renderAnswers(indexQuestion);
 
-        nextButton.classList.remove('d-none');
-        prevButton.classList.remove('d-none');
+          nextButton.classList.remove('d-none');
+          prevButton.classList.remove('d-none');
+          sendButton.classList.add('d-none');
+          break;
+        case (numberQuestion === 0):
+          prevButton.classList.add('d-none');
+          break;
+        case (numberQuestion === questions.length):
+          questionTitle.textContent = '';
+          nextButton.classList.add('d-none');
+          prevButton.classList.add('d-none');
+          sendButton.classList.remove('d-none');
+          formAnswers.innerHTML = `
+            <div class="form-group">
+              <label for="numberPhone">Введите ваш номер телефона</label>
+              <input type="tel" class="form-control" id="numberPhone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+              required>
+            </div>
+          `;
+          break;
+        case (numberQuestion === questions.length + 1):
+          formAnswers.textContent = 'Спасибо за пройденный тест!';
+          setTimeout(closeModal, 2000);
+          break;
       }
+      // if (numberQuestion >= 0 && numberQuestion <= questions.length - 1) {
+      //   questionTitle.textContent = `${questions[indexQuestion].question}`;
+      //   renderAnswers(indexQuestion);
 
-      if (numberQuestion === 0) {
-        prevButton.classList.add('d-none');
-      }
+      //   nextButton.classList.remove('d-none');
+      //   prevButton.classList.remove('d-none');
+      //   sendButton.classList.add('d-none');
+      // }
 
-      if (numberQuestion === questions.length){
-        nextButton.classList.add('d-none');
-        formAnswers.textContent = 'Спасибо';
-      }
+      // if (numberQuestion === 0) {
+      //   prevButton.classList.add('d-none');
+      // }
+
+      // if (numberQuestion === questions.length){
+      //   questionTitle.textContent = '';
+      //   nextButton.classList.add('d-none');
+      //   prevButton.classList.add('d-none');
+      //   sendButton.classList.remove('d-none');
+      //   formAnswers.innerHTML = `
+      //     <div class="form-group">
+      //       <label for="numberPhone">Введите ваш номер телефона</label>
+      //       <input type="tel" class="form-control" id="numberPhone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+      //       required>
+      //     </div>
+      //   `;
+      // }
+
+      // if (numberQuestion === questions.length +1) {
+      //   formAnswers.textContent = 'Спасибо за пройденный тест!';
+      //   setTimeout(closeModal, 2000);
+      // }
     };
     renderQuestions(numberQuestion);
 
+    const checkAnswer = () => {
+      const obj = {};
+
+      const inputs = [...formAnswers.elements].filter(input => input.checked || input.id === 'numberPhone');
+      
+      inputs.forEach((input, index) => {
+        if(numberQuestion >= 0 && numberQuestion <= questions.length -1) {
+          obj[`${index}_${questions[numberQuestion].question}`] = input.value;
+        }
+        if(numberQuestion === questions.length) {
+          obj['Номер телефона'] = input.value;
+        }
+      });
+
+      finalAnswers.push(obj);
+    };
+
     nextButton.onclick = () => {
+      checkAnswer();
       numberQuestion++;
       renderQuestions(numberQuestion);
     };
@@ -131,6 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
     prevButton.onclick = () => {
       numberQuestion--;
       renderQuestions(numberQuestion);
+    };
+
+    sendButton.onclick = () => {
+      checkAnswer();
+      numberQuestion++;
+      renderQuestions(numberQuestion);
+      console.log(finalAnswers);
     };
   };
 
